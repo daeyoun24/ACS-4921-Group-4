@@ -23,8 +23,7 @@ public class Cube : MonoBehaviour
     {
         if (PlayerPrefsManager.IsGameUnlocked() && _isCubeGreen == false)
         {
-            TurnGreen();
-            _isCubeGreen = true;
+            TurnGreen();            
         }
         else if (!PlayerPrefsManager.IsGameUnlocked() && _isCubeGreen == true)
         {
@@ -36,5 +35,6 @@ public class Cube : MonoBehaviour
     void TurnGreen()
     {
         _cubeRenderer.material.color = Color.green;
+        _isCubeGreen = true;
     }
 }
