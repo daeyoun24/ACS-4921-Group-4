@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 
 public class SPPWindow : EditorWindow
@@ -30,5 +30,10 @@ public class SPPWindow : EditorWindow
         EditorGUILayout.Space();
 
         EditorGUILayout.HelpBox("It's a help box", MessageType.Info);
+    }
+
+    public bool GetUseAES()
+    {
+        return useAES;
     }
 }
