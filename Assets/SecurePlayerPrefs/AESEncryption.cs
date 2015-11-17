@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Security.Cryptography;
 using System.Text;
 using System.IO;
@@ -6,7 +6,7 @@ using System.IO;
 public class AESEncryption : IEncryption
 {
     const int Iterations = 1000;
-
+    
     public string Encrypt(string plainText, string password)
     {
         if (plainText == null)

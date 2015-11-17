@@ -1,6 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Security.Cryptography;
 using System.Text;
+using System;
+using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
 
 public static class SecurePlayerPrefs
 {
@@ -26,6 +30,60 @@ public static class SecurePlayerPrefs
         else
         {
             return "";
+        }
+    }
+
+    public static void SetInt(string key, int value, string password)
+    {
+        var desEncryption = new DESEncryption();
+        string hashedKey = GenerateMD5(key);
+        string encryptedValue = desEncryption.Encrypt(value.ToString(), password);
+        PlayerPrefs.SetString(hashedKey, encryptedValue);
+    }
+
+    public static int GetInt(string key, string password)
+    {
+        string hashedKey = GenerateMD5(key);
+        if (PlayerPrefs.HasKey(hashedKey))
+        {
+            int decryptedInt = 0;
+            var desEncryption = new DESEncryption();
+            string encryptedValue = PlayerPrefs.GetString(hashedKey);
+            string decryptedValue;
+            desEncryption.TryDecrypt(encryptedValue, password, out decryptedValue);
+            Int32.TryParse(decryptedValue, out decryptedInt);
+            return decryptedInt;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    public static void SetFloat(string key, float value, string password)
+    {
+        var desEncryption = new DESEncryption();
+        string hashedKey = GenerateMD5(key);
+        string encryptedValue = desEncryption.Encrypt(value.ToString(), password);
+        PlayerPrefs.SetString(hashedKey, encryptedValue);
+    }
+
+    public static float GetFloat(string key, string password)
+    {
+        string hashedKey = GenerateMD5(key);
+        if (PlayerPrefs.HasKey(hashedKey))
+        {
+            int decryptedFloat = 0;
+            var desEncryption = new DESEncryption();
+            string encryptedValue = PlayerPrefs.GetString(hashedKey);
+            string decryptedValue;
+            desEncryption.TryDecrypt(encryptedValue, password, out decryptedValue);
+            Int32.TryParse(decryptedValue, out decryptedFloat);
+            return decryptedFloat;
+        }
+        else
+        {
+            return 0;
         }
     }
 
