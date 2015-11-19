@@ -10,15 +10,17 @@ public class PlayerPrefsManager : MonoBehaviour
     public static void UnlockGame()
     {
         PlayerPrefs.SetString(UNLOCK_KEY, "unlocked");
+        SecurePlayerPrefs.SetInt(UNLOCK_DES_KEY, 7, "Password");
+        Debug.Log("Get Int: " + SecurePlayerPrefs.GetInt(UNLOCK_DES_KEY, "Password"));
+        SecurePlayerPrefs.SetFloat(UNLOCK_DES_KEY, 5, "Password");
+        Debug.Log("Get Float: " + SecurePlayerPrefs.GetFloat(UNLOCK_DES_KEY, "Password"));
         SecurePlayerPrefs.SetString(UNLOCK_DES_KEY, "unlocked", "mykey");
-        SecurePlayerPrefsAES.SetString(UNLOCK_AES_KEY, "unlocked", "mykey");
     }
 
     public static void LockGame()
     {
         PlayerPrefs.SetString(UNLOCK_KEY, "locked");
         SecurePlayerPrefs.SetString(UNLOCK_DES_KEY, "locked", "mykey");
-        SecurePlayerPrefsAES.SetString(UNLOCK_AES_KEY, "locked", "mykey");
     }
 
     public static bool IsGameUnlocked()
@@ -40,5 +42,6 @@ public class PlayerPrefsManager : MonoBehaviour
         {
             return false;
         }
+        
     }
 }

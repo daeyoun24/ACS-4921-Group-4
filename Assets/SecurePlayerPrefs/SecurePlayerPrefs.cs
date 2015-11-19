@@ -4,11 +4,18 @@ using System.Text;
 
 public static class SecurePlayerPrefs
 {
+    private static EncryptionAlgorithm algorithm;
+
+    static SecurePlayerPrefs()
+    {
+        algorithm = new EncryptionAlgorithm();
+        setEncryptionType(EncryptionType.DES);
+    }
+
     public static void SetString(string key, string value, string password)
     {
-        var desEncryption = new DESEncryption();
         string hashedKey = GenerateMD5(key);
-        string encryptedValue = desEncryption.Encrypt(value, password);
+        string encryptedValue = algorithm.Encrypt(value, password);
         PlayerPrefs.SetString(hashedKey, encryptedValue);
     }
 
@@ -17,10 +24,9 @@ public static class SecurePlayerPrefs
         string hashedKey = GenerateMD5(key);
         if (PlayerPrefs.HasKey(hashedKey))
         {
-            var desEncryption = new DESEncryption();
             string encryptedValue = PlayerPrefs.GetString(hashedKey);
             string decryptedValue;
-            desEncryption.TryDecrypt(encryptedValue, password, out decryptedValue);
+            algorithm.TryDecrypt(encryptedValue, password, out decryptedValue);
             return decryptedValue;
         }
         else
@@ -38,6 +44,60 @@ public static class SecurePlayerPrefs
         else
         {
             return defaultValue;
+        }
+    }
+
+    public static void SetInt(string key, int value, string password)
+    {
+        //var desEncryption = new DESEncryption();
+        string hashedKey = GenerateMD5(key);
+        string encryptedValue = algorithm.Encrypt(value.ToString(), password);
+        PlayerPrefs.SetString(hashedKey, encryptedValue);
+    }
+
+    public static int GetInt(string key, string password)
+    {
+        string hashedKey = GenerateMD5(key);
+        if (PlayerPrefs.HasKey(hashedKey))
+        {
+            int decryptedInt = 0;
+            //var desEncryption = new DESEncryption();
+            string encryptedValue = PlayerPrefs.GetString(hashedKey);
+            string decryptedValue;
+            algorithm.TryDecrypt(encryptedValue, password, out decryptedValue);
+            System.Int32.TryParse(decryptedValue, out decryptedInt);
+            return decryptedInt;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    public static void SetFloat(string key, float value, string password)
+    {
+        //var desEncryption = new DESEncryption();
+        string hashedKey = GenerateMD5(key);
+        string encryptedValue = algorithm.Encrypt(value.ToString(), password);
+        PlayerPrefs.SetString(hashedKey, encryptedValue);
+    }
+
+    public static float GetFloat(string key, string password)
+    {
+        string hashedKey = GenerateMD5(key);
+        if (PlayerPrefs.HasKey(hashedKey))
+        {
+            int decryptedFloat = 0;
+            //var desEncryption = new DESEncryption();
+            string encryptedValue = PlayerPrefs.GetString(hashedKey);
+            string decryptedValue;
+            algorithm.TryDecrypt(encryptedValue, password, out decryptedValue);
+            System.Int32.TryParse(decryptedValue, out decryptedFloat);
+            return decryptedFloat;
+        }
+        else
+        {
+            return 0;
         }
     }
 
@@ -67,5 +127,10 @@ public static class SecurePlayerPrefs
             sb.Append(hash[i].ToString("X2"));
         }
         return sb.ToString();
+    }
+
+    public static void setEncryptionType(EncryptionType type)
+    {
+        algorithm.setEncryptionType(type);
     }
 }
