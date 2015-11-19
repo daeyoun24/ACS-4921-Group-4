@@ -4,26 +4,24 @@ using System.Collections;
 public class PlayerPrefsManager : MonoBehaviour
 {
     private const string UNLOCK_KEY = "game_unlocked";
-    private const string UNLOCK_DES_KEY = "game_unlocked_DES";
-    private const string UNLOCK_AES_KEY = "game_unlocked_AES";
-
+    private const string UNLOCK_SECURE_KEY = "game_unlocked";
+    private const string SECURE_INT = "int";
+    private const string SECURE_FLOAT = "float";
+    
     public static void UnlockGame()
     {
         PlayerPrefs.SetString(UNLOCK_KEY, "unlocked");
-        SecurePlayerPrefs.SetInt(UNLOCK_DES_KEY, 7, "Password");
-        Debug.Log("Get Int: " + SecurePlayerPrefs.GetInt(UNLOCK_DES_KEY, "Password"));
-        SecurePlayerPrefs.SetFloat(UNLOCK_DES_KEY, 5, "Password");
-        Debug.Log("Get Float: " + SecurePlayerPrefs.GetFloat(UNLOCK_DES_KEY, "Password"));
-        SecurePlayerPrefs.SetString(UNLOCK_DES_KEY, "unlocked", "mykey");
-        SecurePlayerPrefsAES.SetString(UNLOCK_AES_KEY, "unlocked", "mykey");
-        
+        SecurePlayerPrefs.SetString(UNLOCK_SECURE_KEY, "unlocked");
+        SecurePlayerPrefs.SetInt(SECURE_INT, 7);
+        Debug.Log("Get Int: " + SecurePlayerPrefs.GetInt(SECURE_INT));
+        SecurePlayerPrefs.SetFloat(SECURE_FLOAT, 1.2345f);
+        Debug.Log("Get Float: " + SecurePlayerPrefs.GetFloat(SECURE_FLOAT));       
     }
 
     public static void LockGame()
     {
         PlayerPrefs.SetString(UNLOCK_KEY, "locked");
-        SecurePlayerPrefs.SetString(UNLOCK_DES_KEY, "locked", "mykey");
-        SecurePlayerPrefsAES.SetString(UNLOCK_AES_KEY, "locked", "mykey");
+        SecurePlayerPrefs.SetString(UNLOCK_SECURE_KEY, "locked");
     }
 
     public static bool IsGameUnlocked()
@@ -37,14 +35,14 @@ public class PlayerPrefsManager : MonoBehaviour
         //    return false;
         //}
 
-        if (SecurePlayerPrefs.GetString(UNLOCK_DES_KEY, "mykey") == "unlocked")
+        if (SecurePlayerPrefs.GetString(UNLOCK_SECURE_KEY) == "unlocked")
         {
             return true;
         }
         else
         {
             return false;
-        }
-        
+        }        
     }
+
 }

@@ -5,90 +5,79 @@ using System;
 
 public static class SecurePlayerPrefs
 {
-    public static void SetString(string key, string value, string password)
+    // Set true if you want to use AES.
+    // false: use DES.
+    public static bool useAES = true;
+
+    static string password = "Password";
+    
+    public static void DeleteAll()
     {
-        var encryption = new DESEncryption();
-        string hashedKey = GenerateMD5(key);
-        string encryptedValue = encryption.Encrypt(value, password);
-        PlayerPrefs.SetString(hashedKey, encryptedValue);
+        PlayerPrefs.DeleteAll();
     }
 
-    public static string GetString(string key, string password)
+    public static void DeleteKey(string key)
     {
         string hashedKey = GenerateMD5(key);
-        if (PlayerPrefs.HasKey(hashedKey))
+        PlayerPrefs.DeleteKey(hashedKey);
+    }
+
+    public static float GetFloat(string key)
+    {
+        return GetFloat(key, 0.0f);
+    }
+
+    public static float GetFloat(string key, float defaultValue, bool isDecrypt = true)
+    {
+        float returnValue = defaultValue;
+        string strValue = GetString(key);
+
+        if (float.TryParse(strValue, out returnValue))
         {
-            var encryption = new DESEncryption();
+            return returnValue;
+        }
+        else
+        {
+            return defaultValue;
+        }
+    }
+
+    public static int GetInt(string key)
+    {
+        return GetInt(key, 0);
+    }
+
+    public static int GetInt(string key, int defaultValue, bool isDecrypt = true)
+    {
+        int returnValue = defaultValue;
+        string strValue = GetString(key);
+
+        if (int.TryParse(strValue, out returnValue))
+        {
+            return returnValue;
+        }
+        else
+        {
+            return defaultValue;
+        }
+    }
+
+    public static string GetString(string key)
+    {
+        return GetString(key, "");
+    }
+
+    public static string GetString(string key, string defaultValue)
+    {
+        Encryption encryption = new Encryption();
+
+        if (HasKey(key))
+        {
+            string hashedKey = GenerateMD5(key);
             string encryptedValue = PlayerPrefs.GetString(hashedKey);
             string decryptedValue;
             encryption.TryDecrypt(encryptedValue, password, out decryptedValue);
             return decryptedValue;
-        }
-        else
-        {
-            return "";
-        }
-    }
-
-    public static void SetInt(string key, int value, string password)
-    {
-        var encryption = new DESEncryption();
-        string hashedKey = GenerateMD5(key);
-        string encryptedValue = encryption.Encrypt(value.ToString(), password);
-        PlayerPrefs.SetString(hashedKey, encryptedValue);
-    }
-
-    public static int GetInt(string key, string password)
-    {
-        string hashedKey = GenerateMD5(key);
-        if (PlayerPrefs.HasKey(hashedKey))
-        {
-            int decryptedInt = 0;
-            var encryption = new DESEncryption();
-            string encryptedValue = PlayerPrefs.GetString(hashedKey);
-            string decryptedValue;
-            encryption.TryDecrypt(encryptedValue, password, out decryptedValue);
-            Int32.TryParse(decryptedValue, out decryptedInt);
-            return decryptedInt;
-        }
-        else
-        {
-            return 0;
-        }
-    }
-
-    public static void SetFloat(string key, float value, string password)
-    {
-        var encryption = new DESEncryption();
-        string hashedKey = GenerateMD5(key);
-        string encryptedValue = encryption.Encrypt(value.ToString(), password);
-        PlayerPrefs.SetString(hashedKey, encryptedValue);
-    }
-
-    public static float GetFloat(string key, string password)
-    {
-        string hashedKey = GenerateMD5(key);
-        if (PlayerPrefs.HasKey(hashedKey))
-        {
-            int decryptedFloat = 0;
-            var encryption = new DESEncryption();
-            string encryptedValue = PlayerPrefs.GetString(hashedKey);
-            string decryptedValue;
-            encryption.TryDecrypt(encryptedValue, password, out decryptedValue);
-            Int32.TryParse(decryptedValue, out decryptedFloat);
-            return decryptedFloat;
-        }
-        else
-        {
-            return 0;
-        }
-    }
-
-    public static string GetString(string key, string defaultValue, string password)
-    {
-        if (HasKey(key))
-        {
-            return GetString(key, password);
         }
         else
         {
@@ -101,6 +90,30 @@ public static class SecurePlayerPrefs
         string hashedKey = GenerateMD5(key);
         bool hasKey = PlayerPrefs.HasKey(hashedKey);
         return hasKey;
+    }
+
+    public static void Save()
+    {
+        PlayerPrefs.Save();
+    }
+
+    public static void SetFloat(string key, float value)
+    {
+        SetString(key, value.ToString());
+    }
+
+    public static void SetInt(string key, int value)
+    {
+        SetString(key, value.ToString());
+    }
+
+    public static void SetString(string key, string value)
+    {
+        Encryption encryption = new Encryption();
+
+        string hashedKey = GenerateMD5(key);
+        string encryptedValue = encryption.Encrypt(value, password);
+        PlayerPrefs.SetString(hashedKey, encryptedValue);
     }
 
     /// <summary>
