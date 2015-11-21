@@ -10,6 +10,7 @@ public class PlayerPrefsManager : MonoBehaviour
     
     public static void UnlockGame()
     {
+        Debug.Log(SecurePlayerPrefs.password);
         PlayerPrefs.SetString(UNLOCK_KEY, "unlocked");
         SecurePlayerPrefs.SetString(UNLOCK_SECURE_KEY, "unlocked");
         SecurePlayerPrefs.SetInt(SECURE_INT, 7);
@@ -20,6 +21,7 @@ public class PlayerPrefsManager : MonoBehaviour
 
     public static void LockGame()
     {
+        Debug.Log(SecurePlayerPrefs.password);
         PlayerPrefs.SetString(UNLOCK_KEY, "locked");
         SecurePlayerPrefs.SetString(UNLOCK_SECURE_KEY, "locked");
     }

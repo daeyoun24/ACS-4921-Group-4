@@ -9,7 +9,9 @@ public static class SecurePlayerPrefs
     // false: use DES.
     public static bool useAES = true;
 
-    static string password = "Password";
+    // Default password is a unique device identifier. It's guaranteed to be unique for every device.
+    // Change to a string if you want to use a specific password.
+    public static string password = SystemInfo.deviceUniqueIdentifier;
     
     public static void DeleteAll()
     {
