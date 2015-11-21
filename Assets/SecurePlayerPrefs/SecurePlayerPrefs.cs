@@ -9,7 +9,27 @@ public static class SecurePlayerPrefs
     // false: use DES.
     public static bool useAES = true;
 
-    static string password = "Password";
+    //Return:
+    //0: FAIL STATE
+    //1: PASSWORD FOUND/VERIFIED
+    //2: PASSWORD CREATED
+    public static int Initialize()
+    {
+        //the following may corrupt saves and create data loss under the following conditions:
+        //iOS7: If UIDevice identifierForVendor fails, ASIdentifierManager advertisingIdentifier is called, which may cause loss of save data due to new password.
+        //Windows Store: uses AdvertisingManager::AdvertisingId, which can be disabled at any time and changes to fallback: HardwareIdentification::GetPackageSpecificToken().Id
+        string password = SystemInfo.deviceUniqueIdentifier.Clone();
+        if (!HasKey(password)) {
+            string verify = GenerateMD5(password.Clone());
+            this.SetString(password, verify);
+            return 2;
+        }
+        else {
+            string verify = GetString(password);
+            verify.equals(GenerateMD5(password)) ? return 1 : return 0;
+        }
+        return 0;
+    }
     
     public static void DeleteAll()
     {
