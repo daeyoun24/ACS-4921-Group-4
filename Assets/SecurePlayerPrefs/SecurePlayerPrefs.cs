@@ -9,26 +9,50 @@ public static class SecurePlayerPrefs
     // false: use DES.
     public static bool useAES = true;
 
-    //Return:
-    //0: FAIL STATE
-    //1: PASSWORD FOUND/VERIFIED
-    //2: PASSWORD CREATED
+    // how many hashes do the getters and setters use to find values?
+    public static uint bounce = 2;
+
+    private static string passKey = GenerateMD5(SystemInfo.deviceUniqueIdentifier); 
+
+    /**
+     * Return:
+     * 0: FAIL STATE
+     * 1: PASSWORD FOUND/VERIFIED
+     * 2: PASSWORD CREATED
+     * 
+     * Should be called every time the program executes.
+     */
     public static int Initialize()
     {
-        //the following may corrupt saves and create data loss under the following conditions:
-        //iOS7: If UIDevice identifierForVendor fails, ASIdentifierManager advertisingIdentifier is called, which may cause loss of save data due to new password.
-        //Windows Store: uses AdvertisingManager::AdvertisingId, which can be disabled at any time and changes to fallback: HardwareIdentification::GetPackageSpecificToken().Id
-        string password = SystemInfo.deviceUniqueIdentifier.Clone();
+        /** The following may corrupt saves and create data loss under the following conditions:
+         * iOS7: If UIDevice identifierForVendor fails, ASIdentifierManager advertisingIdentifier is called, which may cause loss of save data due to new password.
+         * Windows Store: uses AdvertisingManager::AdvertisingId, which can be disabled at any time and changes to fallback: HardwareIdentification::GetPackageSpecificToken().Id
+         */
+        string password = SystemInfo.deviceUniqueIdentifier;
         if (!HasKey(password)) {
-            string verify = GenerateMD5(password.Clone());
-            this.SetString(password, verify);
+            string verify = HashLoop((int)bounce, password);
+            SetString(password, verify);
             return 2;
         }
         else {
             string verify = GetString(password);
-            verify.equals(GenerateMD5(password)) ? return 1 : return 0;
+            string check = HashLoop((int)bounce, password);
+            if (verify.Equals(check)) { return 1; } else { return 0; }
         }
-        return 0;
+    }
+
+    private static string HashLoop(int count, string hash)
+    {
+        if (count > 0)
+        {
+            string newHash = GenerateMD5(hash);
+            newHash = HashLoop(count--, newHash);
+            return newHash;
+        }
+        else
+        {
+            return hash;
+        }
     }
     
     public static void DeleteAll()
@@ -90,13 +114,13 @@ public static class SecurePlayerPrefs
     public static string GetString(string key, string defaultValue)
     {
         Encryption encryption = new Encryption();
-
-        if (HasKey(key))
+        string realKey = HashLoop((int)bounce, key);
+        if (HasKey(realKey))
         {
-            string hashedKey = GenerateMD5(key);
+            string hashedKey = GenerateMD5(HashLoop((int)bounce, key));
             string encryptedValue = PlayerPrefs.GetString(hashedKey);
             string decryptedValue;
-            encryption.TryDecrypt(encryptedValue, password, out decryptedValue);
+            encryption.TryDecrypt(encryptedValue, passKey, out decryptedValue);
             return decryptedValue;
         }
         else
@@ -131,8 +155,8 @@ public static class SecurePlayerPrefs
     {
         Encryption encryption = new Encryption();
 
-        string hashedKey = GenerateMD5(key);
-        string encryptedValue = encryption.Encrypt(value, password);
+        string hashedKey = GenerateMD5(HashLoop((int)bounce, key));
+        string encryptedValue = encryption.Encrypt(value, passKey);
         PlayerPrefs.SetString(hashedKey, encryptedValue);
     }
 
