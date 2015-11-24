@@ -15,6 +15,9 @@ public static class SecurePlayerPrefs
     // Change to a string if you want to use a specific password.
     public static string password = SystemInfo.deviceUniqueIdentifier;
 
+    // how many hashes do the getters and setters use to find values?
+    public static int bounce = 1;
+
     public enum EncryptionType
     {
         DES, AES, AES32
@@ -27,7 +30,8 @@ public static class SecurePlayerPrefs
 
     public static void DeleteKey(string key)
     {
-        string hashedKey = GenerateMD5(key);
+        //string hashedKey = GenerateMD5(key);
+        string hashedKey = HashLoop(key);
         PlayerPrefs.DeleteKey(hashedKey);
     }
 
@@ -82,7 +86,8 @@ public static class SecurePlayerPrefs
 
         if (HasKey(key))
         {
-            string hashedKey = GenerateMD5(key);
+            //string hashedKey = GenerateMD5(key);
+            string hashedKey = HashLoop(key);
             string encryptedValue = PlayerPrefs.GetString(hashedKey);
             string decryptedValue;
             encryption.TryDecrypt(encryptedValue, password, out decryptedValue);
@@ -98,7 +103,8 @@ public static class SecurePlayerPrefs
     {
         if (HasKey(key))
         {
-            string hashedKey = GenerateMD5(key);
+            //string hashedKey = GenerateMD5(key);
+            string hashedKey = HashLoop(key);
             string encryptedValue = PlayerPrefs.GetString(hashedKey);
             return encryptedValue;
         }
@@ -107,7 +113,8 @@ public static class SecurePlayerPrefs
 
     public static bool HasKey(string key)
     {
-        string hashedKey = GenerateMD5(key);
+        //string hashedKey = GenerateMD5(key);
+        string hashedKey = HashLoop(key);
         bool hasKey = PlayerPrefs.HasKey(hashedKey);
 
         return hasKey;
@@ -132,9 +139,21 @@ public static class SecurePlayerPrefs
     {
         Encryption encryption = new Encryption();
 
-        string hashedKey = GenerateMD5(key);
+        //string hashedKey = GenerateMD5(key);
+        string hashedKey = HashLoop(key);
         string encryptedValue = encryption.Encrypt(value, password);
         PlayerPrefs.SetString(hashedKey, encryptedValue);
+    }
+
+    static string HashLoop(string hash)
+    {
+        string newHash = hash;
+
+        for (int i = 0; i < bounce; i++)
+        {
+            newHash = GenerateMD5(newHash);
+        }
+        return newHash;
     }
 
     /// <summary>

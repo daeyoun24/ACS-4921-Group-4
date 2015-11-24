@@ -54,7 +54,7 @@ public class Encryption : IEncryption
 
         // generate a key from the password provided
         byte[] key = rfc2898DeriveBytes.GetBytes(keyBytes);
-
+        
         // encrypt the plainText
         using (var memoryStream = new MemoryStream())
         using (var cryptoStream = new CryptoStream(memoryStream, cryptoProvider.CreateEncryptor(key, cryptoProvider.IV), CryptoStreamMode.Write))
