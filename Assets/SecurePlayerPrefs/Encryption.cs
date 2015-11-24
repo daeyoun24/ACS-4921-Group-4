@@ -7,14 +7,7 @@ public interface IEncryption
 {
     string Encrypt(string plainText, string key);
     bool TryDecrypt(string ciperText, string key, out string plainText);
-    //void setEncryptionType(EncryptionType type);
-    //EncryptionType encryptionType();
 }
-
-//public enum EncryptionType
-//{
-//    AES, DES, NULL
-//};
 
 public class Encryption : IEncryption
 {
@@ -24,14 +17,21 @@ public class Encryption : IEncryption
 
     public Encryption()
     {
-        if (SecurePlayerPrefs.useAES)
-        {
-            cryptoProvider = new AesCryptoServiceProvider();            
+        if (SecurePlayerPrefs.encryption == SecurePlayerPrefs.EncryptionType.AES)
+        {            
+            cryptoProvider = new AesCryptoServiceProvider();
+            keyBytes = 16;
         }
+        else if (SecurePlayerPrefs.encryption == SecurePlayerPrefs.EncryptionType.AES32)
+        {
+            cryptoProvider = new AesCryptoServiceProvider();
+            keyBytes = 32;
+        }        
         else
         {
             cryptoProvider = new DESCryptoServiceProvider();
-        }        
+            keyBytes = 8;
+        }
     }
 
     public string Encrypt(string plainText, string password)
@@ -53,14 +53,6 @@ public class Encryption : IEncryption
         var rfc2898DeriveBytes = new Rfc2898DeriveBytes(password, cryptoProvider.IV, Iterations);
 
         // generate a key from the password provided
-        if (SecurePlayerPrefs.useAES)
-        {
-            keyBytes = 16;
-        }
-        else
-        {
-            keyBytes = 8;
-        }
         byte[] key = rfc2898DeriveBytes.GetBytes(keyBytes);
 
         // encrypt the plainText
@@ -99,14 +91,6 @@ public class Encryption : IEncryption
             using (var memoryStream = new MemoryStream(cipherBytes))
             {
                 // get the IV (initialization vector)  
-                if (SecurePlayerPrefs.useAES)
-                {
-                    keyBytes = 16;
-                }
-                else
-                {
-                    keyBytes = 8;
-                }
                 byte[] iv = new byte[keyBytes];
                 memoryStream.Read(iv, 0, iv.Length);
 
@@ -132,38 +116,5 @@ public class Encryption : IEncryption
             return false;
         }
     }
-
-    // Commented because the constructor in SecurePlayerPrefs didn't work (always null)...
-    //public void setEncryptionType(EncryptionType type)
-    //{
-    //    //clear required to overwrite sensitive data before garbage collection occurs
-    //    cryptoProvider.Clear();
-    //    switch(type)
-    //    {
-    //        case EncryptionType.AES:
-    //            {
-    //                cryptoProvider = new AesCryptoServiceProvider();
-    //            }
-    //            break;
-    //        case EncryptionType.DES:
-    //            {
-    //                cryptoProvider = new DESCryptoServiceProvider();
-    //            }
-    //            break;
-    //    }
-    //}
-
-    //public EncryptionType encryptionType()
-    //{
-    //    if (cryptoProvider is AesCryptoServiceProvider)
-    //    {
-    //        return EncryptionType.AES;
-    //    } else if (cryptoProvider is DESCryptoServiceProvider)
-    //    {
-    //        return EncryptionType.DES;
-    //    } else
-    //    {
-    //        return EncryptionType.NULL;
-    //    }
-    //}
+        
 }

@@ -5,14 +5,21 @@ using System;
 
 public static class SecurePlayerPrefs
 {
-    // Set true if you want to use AES.
-    // false: use DES.
-    public static bool useAES = true;
+    // Select one of these types
+    // EncryptionType.DES   (8 bytes key)
+    // EncryptionType.AES   (16 bytes key)
+    // EncryptionType.AES32 (32 bytes key)
+    public static EncryptionType encryption = EncryptionType.DES;
 
     // Default password is a unique device identifier. It's guaranteed to be unique for every device.
     // Change to a string if you want to use a specific password.
     public static string password = SystemInfo.deviceUniqueIdentifier;
-    
+
+    public enum EncryptionType
+    {
+        DES, AES, AES32
+    };
+
     public static void DeleteAll()
     {
         PlayerPrefs.DeleteAll();
@@ -29,7 +36,7 @@ public static class SecurePlayerPrefs
         return GetFloat(key, 0.0f);
     }
 
-    public static float GetFloat(string key, float defaultValue, bool isDecrypt = true)
+    public static float GetFloat(string key, float defaultValue)
     {
         float returnValue = defaultValue;
         string strValue = GetString(key);
@@ -49,7 +56,7 @@ public static class SecurePlayerPrefs
         return GetInt(key, 0);
     }
 
-    public static int GetInt(string key, int defaultValue, bool isDecrypt = true)
+    public static int GetInt(string key, int defaultValue)
     {
         int returnValue = defaultValue;
         string strValue = GetString(key);
@@ -87,10 +94,22 @@ public static class SecurePlayerPrefs
         }
     }
 
+    public static string GetEncrytedString(string key)
+    {
+        if (HasKey(key))
+        {
+            string hashedKey = GenerateMD5(key);
+            string encryptedValue = PlayerPrefs.GetString(hashedKey);
+            return encryptedValue;
+        }
+        return "";
+    }
+
     public static bool HasKey(string key)
     {
         string hashedKey = GenerateMD5(key);
         bool hasKey = PlayerPrefs.HasKey(hashedKey);
+
         return hasKey;
     }
 
