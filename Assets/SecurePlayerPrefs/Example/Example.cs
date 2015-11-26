@@ -7,7 +7,7 @@ public class Example : MonoBehaviour
     public Text SetInt1, SetFloat1, SetString1, GetInt1, GetFloat1, GetString1;
     public Text SetInt2, SetFloat2, SetString2, GetInt2, GetFloat2, GetString2;
     public Text SetInt3, SetFloat3, SetString3, GetInt3, GetFloat3, GetString3;
-
+   
     void Start()
     {
         Test();
@@ -15,6 +15,10 @@ public class Example : MonoBehaviour
 
     public void Test()
     {
+        Debug.Log(SecurePlayerPrefs.password);
+        Debug.Log(SecurePlayerPrefs.encryption);
+        Debug.Log(SecurePlayerPrefs.bounce);
+
         SecurePlayerPrefs.encryption = SecurePlayerPrefs.EncryptionType.DES;
         Display(SetInt1, SetFloat1, SetString1, GetInt1, GetFloat1, GetString1);
 

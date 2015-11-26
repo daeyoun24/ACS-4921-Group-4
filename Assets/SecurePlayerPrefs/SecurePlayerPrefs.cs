@@ -1,28 +1,30 @@
 using UnityEngine;
 using System.Security.Cryptography;
 using System.Text;
-using System;
 
 public static class SecurePlayerPrefs
 {
+    // Configuration asset. Do not edit.
+    static SPPEditorScript scriptAsset = Resources.Load<SPPEditorScript>("SPPEditorScript");
+
     // Select one of these types
     // EncryptionType.DES   (8 bytes key)
     // EncryptionType.AES   (16 bytes key)
     // EncryptionType.AES32 (32 bytes key)
-    public static EncryptionType encryption = EncryptionType.DES;
+    public static EncryptionType encryption = scriptAsset.encryption;
 
     // Default password is a unique device identifier. It's guaranteed to be unique for every device.
     // Change to a string if you want to use a specific password.
-    public static string password = SystemInfo.deviceUniqueIdentifier;
+    public static string password = scriptAsset.password;
 
     // how many hashes do the getters and setters use to find values?
-    public static int bounce = 1;
+    public static int bounce = scriptAsset.bounce;
 
     public enum EncryptionType
     {
         DES, AES, AES32
     };
-
+    
     public static void DeleteAll()
     {
         PlayerPrefs.DeleteAll();
