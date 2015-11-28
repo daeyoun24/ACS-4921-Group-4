@@ -17,12 +17,12 @@ public class Encryption : IEncryption
 
     public Encryption()
     {
-        if (SecurePlayerPrefs.encryption == SecurePlayerPrefs.EncryptionType.AES)
+        if (SecurePlayerPrefs.EType == SecurePlayerPrefs.EncryptionType.AES)
         {            
             cryptoProvider = new AesCryptoServiceProvider();
             keyBytes = 16;
         }
-        else if (SecurePlayerPrefs.encryption == SecurePlayerPrefs.EncryptionType.AES32)
+        else if (SecurePlayerPrefs.EType == SecurePlayerPrefs.EncryptionType.AES32)
         {
             cryptoProvider = new AesCryptoServiceProvider();
             keyBytes = 32;

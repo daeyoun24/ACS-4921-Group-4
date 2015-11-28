@@ -11,14 +11,14 @@ public static class SecurePlayerPrefs
     // EncryptionType.DES   (8 bytes key)
     // EncryptionType.AES   (16 bytes key)
     // EncryptionType.AES32 (32 bytes key)
-    public static EncryptionType encryption = scriptAsset.encryption;
+    public static EncryptionType EType = scriptAsset.EType;
 
     // Default password is a unique device identifier. It's guaranteed to be unique for every device.
     // Change to a string if you want to use a specific password.
-    public static string password = scriptAsset.password;
+    public static string Password = scriptAsset.Password;
 
     // how many hashes do the getters and setters use to find values?
-    public static int bounce = scriptAsset.bounce;
+    public static int NoOfHashing = scriptAsset.NoOfHashing;
 
     public enum EncryptionType
     {
@@ -92,7 +92,7 @@ public static class SecurePlayerPrefs
             string hashedKey = HashLoop(key);
             string encryptedValue = PlayerPrefs.GetString(hashedKey);
             string decryptedValue;
-            encryption.TryDecrypt(encryptedValue, password, out decryptedValue);
+            encryption.TryDecrypt(encryptedValue, Password, out decryptedValue);
             return decryptedValue;
         }
         else
@@ -143,7 +143,7 @@ public static class SecurePlayerPrefs
 
         //string hashedKey = GenerateMD5(key);
         string hashedKey = HashLoop(key);
-        string encryptedValue = encryption.Encrypt(value, password);
+        string encryptedValue = encryption.Encrypt(value, Password);
         PlayerPrefs.SetString(hashedKey, encryptedValue);
     }
 
@@ -151,7 +151,7 @@ public static class SecurePlayerPrefs
     {
         string newHash = hash;
 
-        for (int i = 0; i < bounce; i++)
+        for (int i = 0; i < NoOfHashing; i++)
         {
             newHash = GenerateMD5(newHash);
         }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-public class SPPSetting : EditorWindow
+public class SPPSettings : EditorWindow
 {
     public SPPEditorScript MyScript;
 
@@ -10,7 +10,7 @@ public class SPPSetting : EditorWindow
     [MenuItem("Window/SecurePlayerPrefs")]
     public static void init()
     {
-        SPPSetting window = (SPPSetting)GetWindow(typeof(SPPSetting));
+        SPPSettings window = (SPPSettings)GetWindow(typeof(SPPSettings));
         window.Show();
     }
 
@@ -28,9 +28,9 @@ public class SPPSetting : EditorWindow
 
     public void OnGUI()
     {
-        MyScript.password = EditorGUILayout.TextField("Password", MyScript.password);
-        MyScript.encryption = (SecurePlayerPrefs.EncryptionType)EditorGUILayout.EnumPopup("Encryption", MyScript.encryption);
-        MyScript.bounce = EditorGUILayout.IntField("# of hashing keys", MyScript.bounce);
+        MyScript.Password = EditorGUILayout.TextField("Password", MyScript.Password);
+        MyScript.EType = (SecurePlayerPrefs.EncryptionType)EditorGUILayout.EnumPopup("Encryption Type", MyScript.EType);
+        MyScript.NoOfHashing = EditorGUILayout.IntField("# of hashing keys", MyScript.NoOfHashing);
 
         EditorGUILayout.Space();
 
@@ -46,6 +46,8 @@ public class SPPSetting : EditorWindow
             SaveAsset();
         }
         EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.HelpBox("Set Default\nPassword: a unique device id\nEncryption Type: AES\n# of hashing keys: 1", MessageType.Info);
     }
 
     void SaveAsset()
